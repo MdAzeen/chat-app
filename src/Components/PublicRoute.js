@@ -1,17 +1,22 @@
-import React from 'react'
+import React from 'react';
 import { Redirect, Route } from 'react-router';
+import { Container, Loader } from 'rsuite';
+import { useProfile } from '../context/profile.contest';
 
-function PublicRoute({children,...routeProps}) {
-    const profile=true;
-    if(!profile){
-      return <Redirect to="/" />
-    }
+function PublicRoute({ children, ...routeProps }) {
+  const { profile, isLoading } = useProfile();
+  if (isLoading && !profile) {
+    return (
+      <Container>
+        <Loader center vertical size="md" content="Loading" speed="slow" />
+      </Container>
+    );
+  }
+  if (profile && !isLoading) {
+    return <Redirect to="/" />;
+  }
 
-  return (
-     <Route {...routeProps}>
-       {children}
-     </Route>
-  )
+  return <Route {...routeProps}>{children}</Route>;
 }
 
-export default PublicRoute
+export default PublicRoute;
