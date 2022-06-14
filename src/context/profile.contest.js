@@ -7,9 +7,11 @@ export function ProfileProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [isLoading,setisLoading]=useState(true);
   useEffect(() => {
-    auth.onAuthStateChanged(AuthObj => {
+    let userRef;
+    const authUnSub=auth.onAuthStateChanged(AuthObj => {
       if (AuthObj) {
-        database.ref(`/profiles/${AuthObj.uid}`).on('value', snap => {
+       userRef=database.ref(`/profiles/${AuthObj.uid}`)
+       userRef.on('value', snap => {
           const { name, createdAt } = snap.val();
           const data = {
             name,
@@ -21,10 +23,16 @@ export function ProfileProvider({ children }) {
           setisLoading(false);
         });
       } else {
+        if(userRef){
+          userRef.off();
+        }
         setProfile(null);
         setisLoading(false);
       }
     });
+    return ()=>{
+      authUnSub()
+    }
   }, []);
   return (
     <ProfileContext.Provider value={{isLoading,profile}}>
