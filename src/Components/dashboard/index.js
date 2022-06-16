@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Drawer, Divider,Alert} from 'rsuite';
 import { useProfile } from '../../context/profile.contest';
 import { database } from '../../misc/firebase';
+import AvatarUploadBtn from './AvatarUploadBtn';
 import EditableInput from './EditableInput';
 import ProviderBlock from './ProviderBlock';
 
@@ -32,6 +33,7 @@ function Dashboard({ onSignOut }) {
           onSave={onSave}
           label={<h6 className="mb-2">NickName</h6>}
         />
+        <AvatarUploadBtn/>
       </Drawer.Body>
       <Drawer.Footer>
         <Button block color="red" onClick={onSignOut}>
