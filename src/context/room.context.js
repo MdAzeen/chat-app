@@ -1,4 +1,4 @@
-import React, { createContext,useEffect,useState} from 'react';
+import React,{ createContext,useEffect,useState,useContext} from 'react';
 import { database } from '../misc/firebase';
 import { transformToArrWithId } from '../misc/helpers';
 
@@ -15,6 +15,8 @@ export function RoomProvider({ children }) {
         return ()=>{
             roomListRef.off();
         }
-    })
+    },[])
   return <RoomContest.Provider value={rooms}>{children}</RoomContest.Provider>;
 }
+
+export const useRooms=()=>useContext(RoomContest);
