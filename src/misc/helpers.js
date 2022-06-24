@@ -1,4 +1,3 @@
-// import { ref, get, query, orderByChild, equalTo } from 'firebase/database';
 
 export function getNameInitials(name) {
   const splitName = name.toUpperCase().split(' ');
@@ -22,36 +21,51 @@ export function transformToArrWithId(snapVal) {
     : [];
 }
 
-// export async function getUserUpdates(userId, keyToUpdate, value, db) {
-//   const updates = {};
+export async function getUserUpdates(userId, keyToUpdate, value, db) {
+  const updates = {};
 
-//   updates[`/profiles/${userId}/${keyToUpdate}`] = value;
 
-//   const getMsgs = get(
-//     query(ref(db, '/messages'), orderByChild('author/uid'), equalTo(userId))
-//   );
+  // Actual value updation
+  updates[`/profiles/${userId}/${keyToUpdate}`] = value;
 
-//   const getRooms = get(
-//     query(
-//       ref(db, '/rooms'),
-//       orderByChild('lastMessage/author/uid'),
-//       equalTo(userId)
-//     )
-//   );
-//   // Index not defined, add ".indexOn": "author/uid", for path "/messages", to the rules
 
-//   const [mSnap, rSnap] = await Promise.all([getMsgs, getRooms]);
 
-//   mSnap.forEach(msgSnap => {
-//     updates[`/messages/${msgSnap.key}/author/${keyToUpdate}`] = value;
-//   });
+  // Getting the msgs for the updated user
+  const getMsgs = db
+    .ref('/messages')
+    .orderByChild('author/uid')
+    .equalTo(userId)
+    .once('value');
 
-//   rSnap.forEach(roomSnap => {
-//     updates[`/rooms/${roomSnap.key}/lastMessage/author/${keyToUpdate}`] = value;
-//   });
 
-//   return updates;
-// }
+  // Getting rooms for the updated user
+  const getRooms = db
+    .ref('/rooms')
+    .orderByChild('lastMessage/author/uid')
+    .equalTo(userId)
+    .once('value');
+
+
+  // Resolving the promises at one shot
+  const [mSnap, rSnap] = await Promise.all([getMsgs, getRooms]);
+
+
+  // For Messages object
+  mSnap.forEach(msgSnap => {
+    // FEtching the message object key to update all the references for the updated user
+    updates[`/messages/${msgSnap.key}/author/${keyToUpdate}`] = value;
+  });
+
+
+  // For Rooms object
+  rSnap.forEach(roomSnap => {
+    // FEtching the message object key to update all the references for the updated user
+    updates[`/rooms/${roomSnap.key}/lastMessage/author/${keyToUpdate}`] = value;
+  });
+
+
+  return updates;
+}
 
 // export function groupBy(array, groupingKeyFn) {
 //   return array.reduce((result, item) => {
