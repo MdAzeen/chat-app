@@ -1,16 +1,21 @@
 import React, { useCallback } from 'react'
 import {Button,Icon,Drawer,Alert} from 'rsuite'
 import Dashboard from '.';
+import { isOfflineForDatabase } from '../../context/profile.contest';
 import { useMediaQuery, useModalState } from '../../misc/custom-hook'
-import { auth } from '../../misc/firebase';
+import { auth, database } from '../../misc/firebase';
 
 function DashboardToggle() {
     const {isOpen,close,open}=useModalState();
    const isMobile=useMediaQuery('(max-width: 992px)')
    const onSignOut=useCallback(()=>{
-       auth.signOut();
-       Alert.info('Signed Out',4000);
-       close();
+      database.ref(`/status/${auth.currentUser.uid}`).set(isOfflineForDatabase).then(()=>{
+        auth.signOut();
+        Alert.info('Signed Out',4000);
+        close();
+      }).catch(err=>{
+          Alert.error(err.message,4000);
+      })
    },[close]);
   return (
     // eslint-disable-next-line react/jsx-no-useless-fragment
