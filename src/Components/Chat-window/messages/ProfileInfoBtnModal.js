@@ -4,7 +4,7 @@ import { useModalState } from '../../../misc/custom-hook';
 import ProfileAvatar from '../../ProfileAvatar';
 
 
-function ProfilInfoBtnModal({ profile, ...btnProps }) {
+function ProfilInfoBtnModal({ profile,children,...btnProps }) {
   const { isOpen, close, open } = useModalState();
   const { name, avatar, createdAt } = profile;
   const shortName = profile.name.split(' ')[0];
@@ -30,6 +30,7 @@ function ProfilInfoBtnModal({ profile, ...btnProps }) {
           <p>Member Since {memberSince}</p>
         </Modal.Body>
         <Modal.Footer>
+          {children}
           <Button onClick={close}>Close</Button>
         </Modal.Footer>
       </Modal>
