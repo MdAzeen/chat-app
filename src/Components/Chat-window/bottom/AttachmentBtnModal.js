@@ -46,7 +46,6 @@ function AttachmentBtnModal({afterUpload}) {
         } catch (err) {
           setIsLoading(false);
           Alert.error(err.message, 4000);
-
         }
       };
   return (
